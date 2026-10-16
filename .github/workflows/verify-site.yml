@@ -1,0 +1,63 @@
+name: Verify public evidence website
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check static links and public-only files
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          root=Path(".").resolve()
+          class Links(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.urls=[]
+              def handle_starttag(self,tag,attrs):
+                  if tag in {"a","link"}:
+                      self.urls.extend(v for k,v in attrs if k=="href" and v)
+          pages=list(root.rglob("*.html"))
+          assert len(pages)>=6,pages
+          for page in pages:
+              parser=Links()
+              parser.feed(page.read_text(encoding="utf-8"))
+              for href in parser.urls:
+                  if href.startswith(("https:","http:","mailto:","#","data:")): continue
+                  href=href.split("#",1)[0].split("?",1)[0]
+                  if not href: continue
+                  target=(page.parent/href).resolve()
+                  assert target.is_relative_to(root),(page,href)
+                  assert target.is_file() or (target/"index.html").is_file(),(page,href)
+          forbidden={".pem",".pfx",".p12",".kbx",".rev",".key"}
+          for path in root.rglob("*"):
+              if ".git" in path.parts or not path.is_file(): continue
+              assert path.suffix.lower() not in forbidden,str(path)
+              if path.suffix.lower() in {".html",".asc",".txt",".md"}:
+                  assert "-----BEGIN PGP PRIVATE KEY BLOCK-----" not in path.read_text(encoding="utf-8",errors="replace")
+          print(f"PASS: {len(pages)} linked HTML pages and no private material")
+          PY
+      - name: Check archived source checksum and detached student signature
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          export GNUPGHOME="$(mktemp -d)"
+          chmod 700 "$GNUPGHOME"
+          trap 'rm -rf "$GNUPGHOME"' EXIT
+          cd pgp
+          sha256sum --check SHA256SUMS
+          gpg --batch --import mypubkey-new.asc
+          gpg --batch --status-fd 1 --verify httpd.bz2.gpg httpd.bz2 > /tmp/student-signature-check.log 2>&1
+          grep -Fq "[GNUPG:] VALIDSIG 29B7AA73720168E2E21A546B5DE6353FAA731507" /tmp/student-signature-check.log
+          grep -Fq "Good signature" /tmp/student-signature-check.log
+          echo "PASS: correct archived file and student signature"
