@@ -1,0 +1,14 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Angel Alfredo — Public OpenPGP Key | Project 1c</title><link rel="stylesheet" href="../assets/site.css"></head>
+<body><header class="nav"><div class="wrap"><a class="logo" href="../">PROJECT <span>1C</span> / OPENPGP</a><nav><a href="../">Overview</a><a href="index.html">Verification</a><a href="../statement.html">Deployment note</a></nav></div></header>
+<main class="wrap"><section class="hero"><div class="eyebrow">Authentic personal public key — posted with owner's permission</div><h1>Angel Alfredo<br><span style="color:#ff9b63">OpenPGP public key.</span></h1><p>Only the RSA-4096 public key is published. The secret key, passphrase and revocation certificate stay offline, under the owner's control.</p></section>
+<section class="section"><article class="card"><h2>Identity and fingerprint</h2>
+<p><strong>User ID:</strong> Angel Alfredo &lt;alpizars2005oss@gmail.com&gt;</p>
+<p><strong>Fingerprint:</strong> <code>8B1F 9D51 E627 4659 A85A 255A CDB6 4ABE 6D43 4410</code></p>
+<p><strong>Expires:</strong> 2027-10-15 (renewable)</p>
+<p><a href="mypubkey.asc">Download mypubkey.asc</a></p><p>Verify with <code>gpg --show-keys --fingerprint mypubkey.asc</code>; import using <code>gpg --import mypubkey.asc</code>.</p></article>
+<article class="card"><h2>Public ASCII-armored key</h2><p>The content below is loaded from the published <a href="mypubkey.asc">mypubkey.asc</a> file. This page never needs the private key.</p>
+<pre id="armor" style="white-space:pre-wrap;overflow-wrap:anywhere">Loading...</pre></article>
+<article class="card"><h2>Keyserver evidence status</h2><p>Read-only GitHub Actions independently retrieved the same public-key fingerprint from keys.openpgp.org and keyserver.ubuntu.com. Email UID confirmation on keys.openpgp.org is still pending. The GitHub Pages public URL returned HTTP 404; this is not AWS EC2.</p></article></section></main>
+<footer class="footer"><div class="wrap">Project 1c · OpenPGP student public key, approved for publication</div></footer>
+<script>fetch("mypubkey.asc",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.text()}).then(s=>document.getElementById("armor").textContent=s).catch(e=>document.getElementById("armor").textContent="Could not load key: "+e.message);</script>
+</body></html>

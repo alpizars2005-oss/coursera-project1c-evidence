@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Project 1c: real student-signed Apache source archive and verification instructions">
+<title>Download and verify signed software | Project 1c</title><link rel="stylesheet" href="../assets/site.css"></head>
+<body><header class="nav"><div class="wrap"><a class="logo" href="../">PROJECT <span>1C</span> / OPENPGP</a><nav><a href="../">Overview</a><a href="index.html">GPG lab</a><a href="../statement.html">AWS note</a></nav></div></header>
+<main class="wrap"><section class="hero"><div class="eyebrow">Authentic student-signed software evidence</div>
+<h1>Download software.<br><span style="color:#ff9b63">Verify its signature.</span></h1>
+<span class="pill">RSA-4096 · GnuPG · Verified in GitHub Actions</span>
+<p>Download a historic copy of Apache HTTP Server 2.4.54 source code with a <strong>separate academic signature created by Angel Alfredo</strong>. This does not claim that the student authored Apache or issued the official Apache release signature.</p></section>
+<section class="notice"><p><strong>Alternative hosting:</strong> AWS Academy access was requested but not granted. The original source archive and student-created signature were independently checked in GitHub Actions; this is not evidence of an AWS EC2 deployment. The private repository must be served by a publicly reachable site before browser screenshots can prove hosting.</p></section>
+<section class="section"><h2>Download the three required files</h2><div class="grid">
+<article class="card"><h2>1. Original source archive</h2><p>Apache HTTP Server 2.4.54, downloaded from the official archive and SHA-256 verified. Not intended for production deployment.</p><p><a href="httpd.bz2" download="httpd.bz2">Download httpd.bz2 (7.4 MB) →</a></p></article>
+<article class="card"><h2>2. Student's detached signature</h2><p>594-byte GPG signature created on the student's Windows PC using their replacement private key, which was never uploaded.</p><p><a href="httpd.bz2.gpg" download="httpd.bz2.gpg">Download httpd.bz2.gpg →</a></p></article>
+<article class="card"><h2>3. Student's matching public key</h2><p>Public OpenPGP key for Angel Alfredo &lt;alpizars2005oss@gmail.com&gt;. Primary fingerprint: <code>29B7AA73720168E2E21A546B5DE6353FAA731507</code>.</p><p><a href="mypubkey-new.asc" download="mypubkey-new.asc">Download mypubkey-new.asc →</a></p></article>
+<article class="card"><h2>Actual verification evidence</h2><p><a href="personalSignatureVerified.html">Student-signed archive: authentic GPG result →</a></p><p><a href="httpdVerified.html">Official Apache source release signature: separate GPG result →</a></p></article>
+</div></section>
+<section class="section"><article class="card"><h2>Verify the software independently</h2>
+<p>Place the three downloaded files in the same directory. Then run:</p>
+<pre>gpg --import mypubkey-new.asc
+gpg --fingerprint 29B7AA73720168E2E21A546B5DE6353FAA731507
+gpg --verify httpd.bz2.gpg httpd.bz2</pre>
+<p>GnuPG should report a <strong>Good signature</strong> issued by Angel Alfredo. Compare the full primary fingerprint to <code>29B7AA73720168E2E21A546B5DE6353FAA731507</code>.</p>
+<p>Expected SHA-256 checksum for <code>httpd.bz2</code>:</p>
+<pre>eb397feeefccaf254f8d45de3768d9d68e8e73851c49afd5b7176d1ecf80c340</pre>
+<p>Check on Linux/macOS with <code>sha256sum httpd.bz2</code> or on Windows PowerShell with <code>Get-FileHash .\httpd.bz2 -Algorithm SHA256</code>.</p>
+<p><a href="personalSignatureVerified.html">See the real independent GnuPG transcript →</a></p>
+</article></section>
+<section class="section"><article class="card"><h2>Key rotation and responsible attribution</h2>
+<p>Older keyserver evidence concerns the original fingerprint <code>8B1F9D51E6274659A85A255ACDB64ABE6D434410</code>. The verified signature on this page uses the newer key <code>29B7AA73720168E2E21A546B5DE6353FAA731507</code>. The original key is not yet revoked, and public keyserver migration is pending a confirmed private-key backup.</p>
+<p>Apache HTTP Server is Apache Software Foundation software. The student signature is only an educational attestation of the archived file; it is <strong>not</strong> an upstream Apache release signature or a substitute for independently authenticating the public key.</p>
+</article></section></main><footer class="footer"><div class="wrap">Project 1c · Applied cryptography · Private keys and passwords are never published</div></footer></body></html>

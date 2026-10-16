@@ -1,0 +1,45 @@
+name: Verify and stage public academic archive
+on:
+  push:
+    paths:
+      - ".github/workflows/stage-archive.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Verify pinned Apache archive and student signature before publication
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          export GNUPGHOME="$(mktemp -d)"
+          chmod 700 "$GNUPGHOME"
+          WORK="$(mktemp -d)"
+          trap 'rm -rf "$GNUPGHOME" "$WORK"' EXIT
+          curl --fail --location --show-error --retry 3 --connect-timeout 15 \
+            --max-time 240 --proto '=https' --proto-redir '=https' \
+            --output "$WORK/httpd.bz2" "https://archive.apache.org/dist/httpd/httpd-2.4.54.tar.bz2"
+          echo "eb397feeefccaf254f8d45de3768d9d68e8e73851c49afd5b7176d1ecf80c340  $WORK/httpd.bz2" | sha256sum --check
+          gpg --batch --import pgp/mypubkey-new.asc
+          gpg --batch --status-fd 1 --verify pgp/httpd.bz2.gpg "$WORK/httpd.bz2" > "$WORK/signature.log" 2>&1
+          grep -Fq "[GNUPG:] VALIDSIG 29B7AA73720168E2E21A546B5DE6353FAA731507" "$WORK/signature.log"
+          grep -Fq "Good signature from" "$WORK/signature.log"
+          test "$(stat -c %s "$WORK/httpd.bz2")" = "7434530"
+          cp "$WORK/httpd.bz2" pgp/httpd.bz2
+          printf '%s  %s\n' "eb397feeefccaf254f8d45de3768d9d68e8e73851c49afd5b7176d1ecf80c340" "httpd.bz2" > pgp/SHA256SUMS
+          echo "PASS: the original archive hash and the student's detached signature match."
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pgp/httpd.bz2 pgp/SHA256SUMS
+          if git diff --cached --quiet; then
+            echo "Verified archive already exists with the same content."
+          else
+            git commit -m "data: stage verified Apache archive for coursework"
+            git push origin HEAD:main
+          fi
